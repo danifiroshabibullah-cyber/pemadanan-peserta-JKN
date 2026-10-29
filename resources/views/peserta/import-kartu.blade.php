@@ -122,6 +122,7 @@
             <div class="chips">
                 @foreach ([
                     'No',
+                    'Tanggal',
                     'NO. KARTU',
                     'NIK',
                     'NAMA',
