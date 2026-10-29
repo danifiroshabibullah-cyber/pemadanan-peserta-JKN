@@ -115,25 +115,26 @@
             <h2 class="section-title">Format Kolom Excel</h2>
 
             <p class="hint" style="margin-top: 0">
-                Baris judul dapat berada di antara 20 baris pertama.
-                Kolom NIK dan NAMA wajib tersedia.
+                Kolom <strong>NIK</strong> dan <strong>NAMA</strong> wajib ada.
+                Judul kolom boleh berada di 20 baris pertama.
             </p>
 
             <div class="chips">
                 @foreach ([
-                    'No',
-                    'Tanggal',
+                    'NO',
+                    'TANGGAL',
                     'NO. KARTU',
                     'NIK',
                     'NAMA',
                     'INSTANSI',
-                    'Penyelenggara',
-                    'Jawaban Tinggal Copas',
+                    'PENY',
+                    'JAWABAN TINGGAL COPAS',
                     'PISAT',
-                    'Status Aktif',
-                    'Jns Kpst',
-                    'Terdaftar',
-                    'Tunggakan'
+                    'STATUS AKTIF',
+                    'JNS KPST',
+                    'TERDAFTAR',
+                    'TUNGGAKAN',
+                    'LAINNYA',
                 ] as $kolom)
                     <span class="chip">{{ $kolom }}</span>
                 @endforeach
@@ -143,9 +144,11 @@
                 class="alert-list"
                 style="margin-top: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.7"
             >
-                <li>Pastikan kolom NIK dan NAMA tersedia.</li>
-                <li>Sebaiknya kolom NIK menggunakan format Text di Excel.</li>
-                <li>Data Kartu tidak menggantikan atau menghapus Data Peserta.</li>
+                <li>Kolom di luar daftar ini tetap disimpan dan tampil di kolom "Lainnya".</li>
+                <li>NIK yang sudah ada diperbarui, NIK baru ditambahkan.</li>
+                <li>Baris dengan NIK bukan 16 digit atau tanpa nama dilewati dan dilaporkan.</li>
+                <li>Data Kartu disimpan terpisah dari Data Peserta.</li>
+                <li>Format kolom NIK di Excel sebaiknya <strong>Text</strong>.</li>
             </ul>
         </section>
     </div>

@@ -31,6 +31,7 @@ class ImportKartuController extends Controller
         'NIK' => 'nik',
         'NAMA' => 'nama',
         'INSTANSI' => 'instansi',
+        'PENY' => 'peny',
         'PENYELENGGARA' => 'peny',
         'JAWABANTINGGALCOPAS' => 'jawaban_tinggal_copas',
         'PISAT' => 'pisat',
@@ -202,9 +203,10 @@ class ImportKartuController extends Controller
                 $data = [];
 
                 foreach ($kolom as $indeks => $namaKolom) {
-                    $data[$namaKolom] = $this->bersihkan(
-                        $cells[$indeks] ?? null
-                    );
+                    $raw = $cells[$indeks] ?? null;
+                    $data[$namaKolom] = ($namaKolom === 'tanggal')
+                        ? $this->bersihkanTanggal($raw)
+                        : $this->bersihkan($raw);
                 }
 
                 if (
@@ -479,20 +481,75 @@ class ImportKartuController extends Controller
     }
 
     /**
-     * Membersihkan nilai sel.
+     * Membersihkan nilai tanggal dari sel Excel menjadi format dd/mm/yyyy.
      */
-    private function bersihkan(mixed $nilai): ?string
+    private function bersihkanTanggal(mixed $nilai): ?string
     {
-        if (
-            $nilai === null
-            || is_array($nilai)
-            || is_object($nilai)
-        ) {
+        if ($nilai === null || $nilai === '') {
             return null;
         }
 
         if ($nilai instanceof DateTimeInterface) {
             return $nilai->format('d/m/Y');
+        }
+
+        // Jika Excel serial date numerik (misal 45495)
+        if (is_numeric($nilai)) {
+            $num = (float) $nilai;
+            // Rentang Excel serial date: 20000 (~1954) s/d 80000 (~2119)
+            if ($num > 20000 && $num < 80000) {
+                $timestamp = (int) round(($num - 25569) * 86400);
+                return gmdate('d/m/Y', $timestamp);
+            }
+        }
+
+        if (is_array($nilai) || is_object($nilai)) {
+            return null;
+        }
+
+        $teks = trim((string) $nilai);
+        $teks = preg_replace('/^\xEF\xBB\xBF/', '', $teks) ?? $teks;
+
+        if ($teks === '') {
+            return null;
+        }
+
+        // Format dd/mm/yyyy atau d/m/yyyy atau dd-mm-yyyy
+        if (preg_match('/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/', $teks, $m)) {
+            return sprintf('%02d/%02d/%04d', (int) $m[1], (int) $m[2], (int) $m[3]);
+        }
+
+        // Format yyyy-mm-dd atau yyyy/mm/dd
+        if (preg_match('/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/', $teks, $m)) {
+            return sprintf('%02d/%02d/%04d', (int) $m[3], (int) $m[2], (int) $m[1]);
+        }
+
+        $time = strtotime($teks);
+        if ($time !== false && $time > 0) {
+            return date('d/m/Y', $time);
+        }
+
+        return $teks;
+    }
+
+    /**
+     * Membersihkan nilai sel.
+     */
+    private function bersihkan(mixed $nilai): ?string
+    {
+        if ($nilai === null) {
+            return null;
+        }
+
+        if ($nilai instanceof DateTimeInterface) {
+            return $nilai->format('d/m/Y');
+        }
+
+        if (
+            is_array($nilai)
+            || is_object($nilai)
+        ) {
+            return null;
         }
 
         if (is_bool($nilai)) {

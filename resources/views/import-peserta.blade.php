@@ -125,7 +125,22 @@
                 </p>
 
                 <div class="chips">
-                    @foreach (['No', 'NO. KARTU', 'NIK', 'NAMA', 'INSTANSI', 'Penyelenggara', 'Jawaban Tinggal Copas', 'PISAT', 'Status Aktif', 'Jns Kpst', 'Terdaftar', 'Tunggakan'] as $kolom)
+                    @foreach ([
+                        'NO',
+                        'TANGGAL',
+                        'NO. KARTU',
+                        'NIK',
+                        'NAMA',
+                        'INSTANSI',
+                        'PENY',
+                        'JAWABAN TINGGAL COPAS',
+                        'PISAT',
+                        'STATUS AKTIF',
+                        'JNS KPST',
+                        'TERDAFTAR',
+                        'TUNGGAKAN',
+                        'LAINNYA',
+                    ] as $kolom)
                         <span class="chip">{{ $kolom }}</span>
                     @endforeach
                 </div>
